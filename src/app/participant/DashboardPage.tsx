@@ -7,9 +7,12 @@ import { useChatStore } from '../../stores/useChatStore';
 import { mockDb } from '../../lib/mockDb';
 import { isMockMode } from '../../lib/supabase';
 import type { Profile } from '../../types';
-import { 
+import { Globe } from "./Globe";
+
+
+import {
   Sparkles, RefreshCw, Send, X, ShieldAlert,
-  Search, Users, MessageSquare, 
+  Search, Users, MessageSquare,
   MapPin, Check, AlertTriangle, Inbox
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -18,20 +21,20 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { onlineUsers } = useOutletContext<{ onlineUsers: string[] }>();
   const { user, profile } = useAuthStore();
-  
-  const { 
-    currentEvent, 
-    participants, 
-    announcements, 
-    fetchParticipants, 
-    fetchAnnouncements 
+
+  const {
+    currentEvent,
+    participants,
+    announcements,
+    fetchParticipants,
+    fetchAnnouncements
   } = useEventStore();
 
-  const { 
-    suggestions, 
-    sentRequests, 
-    receivedRequests, 
-    connections, 
+  const {
+    suggestions,
+    sentRequests,
+    receivedRequests,
+    connections,
     locations,
     isLoading: netLoading,
     fetchSuggestions,
@@ -52,6 +55,7 @@ export default function DashboardPage() {
   const [reportDetails, setReportDetails] = useState('');
   const [sendingRequestIds, setSendingRequestIds] = useState<string[]>([]);
   const [refreshingSugs, setRefreshingSugs] = useState(false);
+  const [showAttendees, setShowAttendees] = useState(false);
 
   // Fetch initial event details
   useEffect(() => {
@@ -168,7 +172,7 @@ export default function DashboardPage() {
       // Exclude blocked users
       if (isMockMode) {
         const blocks = mockDb.getBlocks();
-        const isBlocked = blocks.some(b => 
+        const isBlocked = blocks.some(b =>
           (b.blocker_id === user?.id && b.blocked_id === p.id) ||
           (b.blocker_id === p.id && b.blocked_id === user?.id)
         );
@@ -185,12 +189,12 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-1 overflow-hidden h-full">
-      
+
       {/* ======================================================== */}
       {/* CENTER PANEL — Main Home Feed                            */}
       {/* ======================================================== */}
       <div className="flex-1 flex flex-col h-full overflow-y-auto px-6 py-6 space-y-8 pb-24 md:pb-12 border-r border-zinc-900">
-        
+
         {/* Mobile Header indicator */}
         <div className="flex md:hidden justify-between items-center bg-zinc-950/80 backdrop-blur border border-zinc-900 px-4 py-3 rounded-2xl">
           <div className="font-extrabold text-brand-indigo">HackConnect</div>
@@ -208,7 +212,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Sparkles className="text-brand-indigo" size={20} />
-              <h2 className="text-lg font-bold tracking-tight">People you might want to connect with</h2>
+              <h2 className="text-lg font-bold tracking-tight">Lobby Universe</h2>
             </div>
             <button
               onClick={handleRefreshSuggestions}
@@ -219,6 +223,8 @@ export default function DashboardPage() {
               <span>Refresh</span>
             </button>
           </div>
+
+          <Globe participants={participants} onlineUsers={onlineUsers} onSelectProfile={setSelectedProfile} />
 
           {refreshingSugs || netLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,7 +251,7 @@ export default function DashboardPage() {
               {suggestions.slice(0, 4).map((sug) => {
                 const isOnline = sug.suggested_profile && onlineUsers.includes(sug.suggested_profile.id);
                 const isSentPending = sug.suggested_profile && isRequestPending(sug.suggested_profile.id).isSent;
-                
+
                 if (!sug.suggested_profile) return null;
 
                 return (
@@ -260,9 +266,8 @@ export default function DashboardPage() {
                               alt={sug.suggested_profile.full_name}
                               className="w-12 h-12 rounded-full border border-zinc-800 object-cover"
                             />
-                            <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[#0F0F10] ${
-                              isOnline ? 'bg-brand-emerald' : 'bg-zinc-650'
-                            }`} />
+                            <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-[#0F0F10] ${isOnline ? 'bg-brand-emerald' : 'bg-zinc-650'
+                              }`} />
                           </div>
                           <div>
                             <h3 className="font-bold text-sm text-white hover:text-brand-indigo cursor-pointer truncate max-w-[140px]" onClick={() => setSelectedProfile(sug.suggested_profile!)}>
@@ -271,7 +276,7 @@ export default function DashboardPage() {
                             <div className="text-xs text-zinc-500 font-semibold">{sug.suggested_profile.looking_for || 'Networking'}</div>
                           </div>
                         </div>
-                        
+
                         {/* Score Indicator */}
                         <div className="px-2.5 py-1 bg-brand-indigo/10 border border-brand-indigo/25 text-brand-indigo rounded-lg text-xs font-bold">
                           {sug.compatibility_score}% Match
@@ -289,11 +294,10 @@ export default function DashboardPage() {
                         {sug.suggested_profile.skills.slice(0, 3).map(skill => {
                           const hasOverlap = profile?.skills.includes(skill);
                           return (
-                            <span key={skill} className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                              hasOverlap 
-                                ? 'bg-brand-indigo/20 text-brand-indigo border border-brand-indigo/30'
-                                : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
-                            }`}>
+                            <span key={skill} className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${hasOverlap
+                              ? 'bg-brand-indigo/20 text-brand-indigo border border-brand-indigo/30'
+                              : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+                              }`}>
                               {skill}
                             </span>
                           );
@@ -363,7 +367,7 @@ export default function DashboardPage() {
                       <p className="text-xs text-zinc-500 italic mt-0.5">"{req.message || 'No intro message'}"</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 w-full md:w-auto">
                     <button
                       onClick={() => handleAcceptRequest(req.id)}
@@ -415,7 +419,56 @@ export default function DashboardPage() {
       {/* ======================================================== */}
       {/* RIGHT PANEL — Search & Attendee List (Google Meet style) */}
       {/* ======================================================== */}
-      <div className="hidden md:flex flex-col w-80 bg-zinc-950/40 p-4 border-l border-zinc-900 overflow-y-auto h-full space-y-4 flex-shrink-0">
+      <button
+        onClick={() => setShowAttendees(true)}
+        className="fixed right-6 top-24 z-40
+             px-5 py-2.5
+             rounded-xl
+             bg-gradient-to-r from-brand-indigo to-brand-purple
+             text-white
+             font-semibold
+             shadow-xl
+             hover:scale-105
+             transition-all"
+      >
+        Attendees
+      </button>
+
+      {showAttendees && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          onClick={() => setShowAttendees(false)}
+        />
+      )}
+
+      <div className={`
+        fixed
+        top-20
+        right-4
+        bottom-4
+        w-[380px]
+        rounded-2xl
+        shadow-2xl
+        bg-zinc-950
+        border-l
+        border-zinc-900
+        p-4
+        z-50
+        overflow-y-auto
+        transition-transform
+        duration-300
+        ease-in-out
+        ${showAttendees ? "translate-x-0" : "translate-x-full"}
+    `}>
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => setShowAttendees(false)}
+            className="text-zinc-500 hover:text-white transition"
+          >
+            ✕
+          </button>
+
+        </div>
         <div className="font-bold text-sm text-zinc-400 uppercase tracking-wider">
           Attendees ({filteredParticipants.length})
         </div>
@@ -442,9 +495,9 @@ export default function DashboardPage() {
             // Fetch availability state
             const locState = locations[item.id];
             const availability = locState?.availability || 'offline';
-            const availabilityDot = 
-              availability === 'available' ? 'bg-brand-emerald' : 
-              availability === 'busy' ? 'bg-brand-amber' : 'bg-zinc-650';
+            const availabilityDot =
+              availability === 'available' ? 'bg-brand-emerald' :
+                availability === 'busy' ? 'bg-brand-amber' : 'bg-zinc-650';
 
             return (
               <div
@@ -458,7 +511,7 @@ export default function DashboardPage() {
                       alt={item.full_name}
                       className="w-9 h-9 rounded-full object-cover border border-zinc-800"
                     />
-                    <span 
+                    <span
                       className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-zinc-950 ${availabilityDot}`}
                       title={availability}
                     />
@@ -527,7 +580,7 @@ export default function DashboardPage() {
       {isMobilePeopleOpen && (
         <div className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 flex justify-end">
           <div className="w-80 max-w-full bg-[#0f0f10] border-l border-zinc-900 h-full flex flex-col p-4 space-y-4 animate-slide-in-right">
-            
+
             <div className="flex justify-between items-center pb-2 border-b border-zinc-900">
               <span className="font-bold text-sm text-white">Event Attendees ({filteredParticipants.length})</span>
               <button onClick={() => setIsMobilePeopleOpen(false)} className="text-zinc-450 hover:text-white">
@@ -556,9 +609,9 @@ export default function DashboardPage() {
 
                 const locState = locations[item.id];
                 const availability = locState?.availability || 'offline';
-                const availabilityDot = 
-                  availability === 'available' ? 'bg-brand-emerald' : 
-                  availability === 'busy' ? 'bg-brand-amber' : 'bg-zinc-650';
+                const availabilityDot =
+                  availability === 'available' ? 'bg-brand-emerald' :
+                    availability === 'busy' ? 'bg-brand-amber' : 'bg-zinc-650';
 
                 return (
                   <div
@@ -624,7 +677,7 @@ export default function DashboardPage() {
       {selectedProfile && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-center justify-center p-4">
           <div className="glass-panel w-full max-w-lg rounded-2xl glow-indigo border border-zinc-850 shadow-2xl p-6 relative animate-zoom-in max-h-[90vh] overflow-y-auto">
-            
+
             <button
               onClick={() => setSelectedProfile(null)}
               className="absolute top-4 right-4 text-zinc-450 hover:text-white"
@@ -639,7 +692,7 @@ export default function DashboardPage() {
                 alt={selectedProfile.full_name}
                 className="w-20 h-20 rounded-full object-cover border-2 border-brand-indigo/30"
               />
-              
+
               <div className="text-center sm:text-left space-y-1.5 flex-1 min-w-0">
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                   <h3 className="text-xl font-bold text-white">{selectedProfile.full_name}</h3>
@@ -647,18 +700,18 @@ export default function DashboardPage() {
                     {selectedProfile.looking_for ? `Looking for ${selectedProfile.looking_for}` : 'Attendee'}
                   </span>
                 </div>
-                
+
                 {/* Availability status tag */}
                 {(() => {
                   const loc = locations[selectedProfile.id];
                   const avail = loc?.availability || 'offline';
                   const zone = loc?.zone;
-                  const label = 
-                    avail === 'available' ? 'Available' : 
-                    avail === 'busy' ? 'Busy (Do Not Disturb)' : 'Offline';
-                  const color = 
-                    avail === 'available' ? 'text-brand-emerald bg-brand-emerald/10' : 
-                    avail === 'busy' ? 'text-brand-amber bg-brand-amber/10' : 'text-zinc-500 bg-zinc-900';
+                  const label =
+                    avail === 'available' ? 'Available' :
+                      avail === 'busy' ? 'Busy (Do Not Disturb)' : 'Offline';
+                  const color =
+                    avail === 'available' ? 'text-brand-emerald bg-brand-emerald/10' :
+                      avail === 'busy' ? 'text-brand-amber bg-brand-amber/10' : 'text-zinc-500 bg-zinc-900';
 
                   // Note: Location details are strictly visible ONLY to mutual connections
                   const isFriend = isConnected(selectedProfile.id);
@@ -667,13 +720,12 @@ export default function DashboardPage() {
                   return (
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-center sm:justify-start gap-1.5">
-                        <span className={`w-2.5 h-2.5 rounded-full ${
-                          avail === 'available' ? 'bg-brand-emerald' : 
+                        <span className={`w-2.5 h-2.5 rounded-full ${avail === 'available' ? 'bg-brand-emerald' :
                           avail === 'busy' ? 'bg-brand-amber' : 'bg-zinc-650'
-                        }`} />
+                          }`} />
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${color}`}>{label}</span>
                       </div>
-                      
+
                       {/* Enforce privacy: Only connections can see zone text */}
                       {showLocationDetails ? (
                         <div className="text-xs text-zinc-400 font-semibold bg-zinc-950 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5">
@@ -734,7 +786,7 @@ export default function DashboardPage() {
 
             {/* Links and Dialog buttons */}
             <div className="pt-4 flex flex-col sm:flex-row justify-between gap-4 items-center">
-              
+
               {/* External Profile Links */}
               <div className="flex gap-2.5">
                 {selectedProfile.linkedin_url && (
@@ -770,7 +822,7 @@ export default function DashboardPage() {
 
               {/* Networking Action Buttons */}
               <div className="flex items-center gap-2">
-                
+
                 {/* Report button */}
                 <button
                   onClick={() => setShowReportDialog(true)}
