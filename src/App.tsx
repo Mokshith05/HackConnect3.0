@@ -13,6 +13,7 @@ import RequestsPage from './app/participant/RequestsPage';
 import ChatPage from './app/participant/ChatPage';
 import LocationPage from './app/participant/LocationPage';
 import ProfilePage from './app/participant/ProfilePage';
+import AuraBoardPage from './app/participant/AuraBoardPage';
 
 // Admin Pages
 import AdminLoginPage from './app/admin/AdminLoginPage';
@@ -100,6 +101,7 @@ export default function App() {
         <Route path="/app" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/app/home" replace />} />
           <Route path="home" element={<DashboardPage />} />
+          <Route path="aura-board" element={<AuraBoardPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="connections" element={<ConnectionsPage />} />
           <Route path="requests" element={<RequestsPage />} />

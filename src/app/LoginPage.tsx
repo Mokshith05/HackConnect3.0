@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 import { LogIn, UserPlus, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Starfield } from './participant/Starfield';
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -66,6 +67,11 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen bg-[#0F0F10] flex items-center justify-center p-6 overflow-hidden">
       
+      {/* Starfield background animation */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <Starfield bgColor="#0F0F10" starColor="rgba(255, 255, 255, 0.45)" quantity={256} speed={0.25} />
+      </div>
+
       {/* Background ambient glows */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-indigo/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-purple/10 blur-[120px] pointer-events-none" />

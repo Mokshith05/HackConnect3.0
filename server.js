@@ -234,7 +234,73 @@ app.post('/api/networking/respond', async (req, res) => {
   }
 });
 
+// Endpoint to get networking leaderboard for an event
+app.get('/api/networking/leaderboard/:eventId', async (req, res) => {
+  const { eventId } = req.params;
+  if (!eventId) {
+    return res.status(400).json({ error: 'Missing eventId' });
+  }
+
+  try {
+    console.log(`Fetching leaderboard for event: ${eventId}`);
+    
+    // 1. Fetch all participants of this event
+    const { data: participants, error: pError } = await supabaseAdmin
+      .from('event_participants')
+      .select('profiles(id, full_name, avatar_url, email)')
+      .eq('event_id', eventId);
+
+    if (pError) {
+      console.error("Error fetching participants for leaderboard:", pError.message);
+      return res.status(400).json({ error: 'Failed to fetch participants: ' + pError.message });
+    }
+
+    // Extract profiles from join table
+    const profiles = (participants || []).map(p => p.profiles).filter(Boolean);
+
+    // 2. Fetch all connections for this event
+    const { data: connections, error: cError } = await supabaseAdmin
+      .from('connections')
+      .select('user_a, user_b')
+      .eq('event_id', eventId);
+
+    if (cError) {
+      console.error("Error fetching connections for leaderboard:", cError.message);
+      return res.status(400).json({ error: 'Failed to fetch connections: ' + cError.message });
+    }
+
+    // 3. Compute streaks
+    const streaks = {};
+    profiles.forEach(p => {
+      streaks[p.id] = 0;
+    });
+
+    connections.forEach(c => {
+      if (streaks[c.user_a] !== undefined) streaks[c.user_a]++;
+      if (streaks[c.user_b] !== undefined) streaks[c.user_b]++;
+    });
+
+    // 4. Build leaderboard response
+    const leaderboard = profiles.map(p => ({
+      id: p.id,
+      full_name: p.full_name,
+      avatar_url: p.avatar_url,
+      streak: streaks[p.id] || 0
+    }));
+
+    // Sort by streak descending, and then by name
+    leaderboard.sort((a, b) => b.streak - a.streak || a.full_name.localeCompare(b.full_name));
+
+    res.status(200).json({ leaderboard });
+
+  } catch (error) {
+    console.error("Leaderboard endpoint catch error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 HackConnect Auth server running on port ${PORT}`);
 });
+

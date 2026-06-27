@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
 import { MessageSquare, MapPin, Shield, Brain, ArrowRight } from 'lucide-react';
+import { Starfield } from './participant/Starfield';
 
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen bg-[#0F0F10] text-zinc-100 flex flex-col justify-between overflow-hidden">
+      
+      {/* Starfield background animation */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <Starfield bgColor="#0F0F10" starColor="rgba(255, 255, 255, 0.45)" quantity={256} speed={0.25} />
+      </div>
       
       {/* Background ambient glows */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-indigo/10 blur-[120px] pointer-events-none" />

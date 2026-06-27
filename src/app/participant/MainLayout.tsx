@@ -5,8 +5,10 @@ import { useNetworkingStore } from '../../stores/useNetworkingStore';
 import { useChatStore } from '../../stores/useChatStore';
 import { useEventStore } from '../../stores/useEventStore';
 import { useConnectionRequests, useLocationStatus, useAttendeePresence } from '../../hooks/useRealtime';
-import { Home, Users, Inbox, MapPin, User, LogOut, Loader2, Calendar } from 'lucide-react';
+import { Home, Users, Inbox, MapPin, User, LogOut, Loader2, Calendar, Rocket } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Starfield } from './Starfield';
+
 
 export default function MainLayout() {
   const navigate = useNavigate();
@@ -75,6 +77,7 @@ export default function MainLayout() {
 
   const menuItems = [
     { label: 'Home', path: '/app/home', icon: Home, badge: 0 },
+    { label: 'Aura Board', path: '/app/aura-board', icon: Rocket, badge: 0 },
     { label: 'Connections', path: '/app/connections', icon: Users, badge: totalUnreadMessages },
     { label: 'Requests', path: '/app/requests', icon: Inbox, badge: requestsCount },
     { label: 'Location', path: '/app/location', icon: MapPin, badge: 0 },
@@ -82,8 +85,13 @@ export default function MainLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0F0F10] text-zinc-100 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#0F0F10] text-zinc-100 flex flex-col md:flex-row relative">
       
+      {/* Starfield background animation */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <Starfield bgColor="#0F0F10" starColor="rgba(255, 255, 255, 0.45)" quantity={256} speed={0.25} />
+      </div>
+
       {/* 1. Sidebar - DESKTOP ONLY */}
       <aside className="hidden md:flex flex-col justify-between w-64 border-r border-zinc-900 bg-zinc-950 p-6 flex-shrink-0 z-20">
         <div className="space-y-8">
@@ -163,7 +171,7 @@ export default function MainLayout() {
       </aside>
 
       {/* 2. Main Page Content Window */}
-      <main className="flex-1 flex flex-col min-w-0 pb-16 md:pb-0 h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 pb-16 md:pb-0 h-screen overflow-hidden relative z-10">
         {/* Pass onlineUsers context to children through context or custom handle if needed */}
         <Outlet context={{ onlineUsers }} />
       </main>

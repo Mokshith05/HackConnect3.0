@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { useEventStore } from '../stores/useEventStore';
 import { ArrowRight, ArrowLeft, Check, Sparkles, Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { Starfield } from './participant/Starfield';
 
 const COMMON_SKILLS = ['React', 'Python', 'TypeScript', 'ML/AI', 'Node.js', 'Go', 'Tailwind', 'Flutter', 'Figma', 'Solidity', 'SQL', 'C++', 'Java', 'Next.js'];
 const COMMON_INTERESTS = ['AI/ML', 'Web3', 'EdTech', 'HealthTech', 'FinTech', 'Gaming', 'SaaS', 'Social Impact', 'Design Systems', 'DevOps'];
@@ -127,6 +128,12 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative min-h-screen bg-[#0F0F10] text-zinc-100 flex items-center justify-center p-6 overflow-hidden">
+      
+      {/* Starfield background animation */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <Starfield bgColor="#0F0F10" starColor="rgba(255, 255, 255, 0.45)" quantity={256} speed={0.25} />
+      </div>
+
       {/* Glow rings */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-indigo/10 blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-purple/10 blur-[120px]" />
