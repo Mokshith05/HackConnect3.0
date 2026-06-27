@@ -208,26 +208,7 @@ export default function DashboardPage() {
         </div>
 
         {/* AURA BOARD TEASER CARD */}
-        <div className="glass-panel rounded-2xl p-5 border border-zinc-900 glow-indigo relative overflow-hidden flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-indigo/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-indigo/10 border border-brand-indigo/25 flex items-center justify-center text-brand-indigo">
-              <Rocket size={20} className="animate-pulse" />
-            </div>
-            <div>
-              <h3 className="font-extrabold text-sm text-white">🚀 Aura Board Progress</h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Streak: <strong className="text-brand-indigo">{connections.length} / 10</strong> connections. Get 10 connections to unlock your premium astronaut badge!
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate('/app/aura-board')}
-            className="w-full sm:w-auto text-xs font-bold px-4 py-2 bg-gradient-to-r from-brand-indigo to-brand-purple hover:opacity-90 text-white rounded-xl shadow-lg transition-all"
-          >
-            Open Aura Board
-          </button>
-        </div>
+
 
         {/* SECTION A: AI SUGGESTED MATCHES */}
         <section className="space-y-4">

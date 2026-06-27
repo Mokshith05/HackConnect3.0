@@ -45,17 +45,17 @@ interface StarData {
 }
 
 export const Starfield: React.FC<StarfieldProps> = ({
-  starColor = 'rgba(255,255,255,1)',
-  bgColor = 'rgba(0,0,0,1)',
+  starColor = "#ffffff",
+  bgColor = "#02030a",
   mouseAdjust = false,
   tiltAdjust = false,
   easing = 1,
   clickToWarp = false,
   hyperspace = false,
   warpFactor = 10,
-  opacity = 0.1,
+  opacity = 0.03,
   speed = 1,
-  quantity = 512,
+  quantity = 100,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [state, setState] = useState({

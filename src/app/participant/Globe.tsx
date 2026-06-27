@@ -13,14 +13,14 @@ const SLOTS = [
   { angle: 30, radius: 55, scale: 0.85 },
   { angle: 150, radius: 60, scale: 0.85 },
   { angle: 270, radius: 50, scale: 0.85 },
-  
+
   // Middle Ring (radius: ~95px)
   { angle: 0, radius: 100, scale: 0.95 },
   { angle: 72, radius: 95, scale: 0.95 },
   { angle: 144, radius: 105, scale: 0.95 },
   { angle: 216, radius: 90, scale: 0.95 },
   { angle: 288, radius: 100, scale: 0.95 },
-  
+
   // Outer Ring (radius: ~140px)
   { angle: 36, radius: 135, scale: 1.1 },
   { angle: 110, radius: 130, scale: 1.05 },
@@ -29,10 +29,10 @@ const SLOTS = [
   { angle: 324, radius: 140, scale: 1.1 }
 ];
 
-export const Globe: React.FC<GlobeProps> = ({ 
-  participants = [], 
+export const Globe: React.FC<GlobeProps> = ({
+  participants = [],
   onlineUsers = [],
-  onSelectProfile 
+  onSelectProfile
 }) => {
   // Slice the participants list to display a maximum of 12 neat avatars
   const visibleParticipants = participants.slice(0, 12);
@@ -64,8 +64,8 @@ export const Globe: React.FC<GlobeProps> = ({
       </style>
       <div className="flex flex-col items-center justify-center py-6 space-y-4">
         {/* Globe Wrapper with Stars */}
-        <div className="relative w-[400px] h-[400px] flex items-center justify-center">
-          
+        <div className="relative w-[700px] h-[700px] flex items-center justify-center">
+
           {/* Background Stars */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div
@@ -104,7 +104,7 @@ export const Globe: React.FC<GlobeProps> = ({
 
           {/* Rotating Globe Body */}
           <div
-            className="relative w-[350px] h-[350px] rounded-full overflow-hidden shadow-[0_0_35px_rgba(99,102,241,0.25),-5px_0_15px_#c3f4ff_inset,15px_2px_35px_#000_inset,-24px_-2px_45px_#6366f133_inset,350px_0_44px_#00000066_inset]"
+            className="relative w-[600px] h-[600px] rounded-full overflow-hidden shadow-[0_0_35px_rgba(99,102,241,0.25),-5px_0_15px_#c3f4ff_inset,15px_2px_35px_#000_inset,-24px_-2px_45px_#6366f133_inset,350px_0_44px_#00000066_inset]"
             style={{
               backgroundImage: "url('https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/globe.jpeg')",
               backgroundSize: "cover",
@@ -117,15 +117,21 @@ export const Globe: React.FC<GlobeProps> = ({
 
             {/* Render participants in well-spaced slots */}
             {visibleParticipants.map((p, index) => {
+              const GLOBE_SIZE = 600; // or whatever your globe size is
+              const CENTER = GLOBE_SIZE / 2;
+              const AVATAR_SIZE = 100; // w-11 h-11
               const isOnline = onlineUsers.includes(p.id);
               const slot = SLOTS[index % SLOTS.length];
-              
+
               // Calculate coordinates based on deterministic slots for 350px globe
               // Center is 175. Offset by 18px (half of avatar size 36px)
               const rad = slot.angle * (Math.PI / 180);
-              const left = 175 + slot.radius * Math.cos(rad) - 18;
-              const top = 175 + slot.radius * Math.sin(rad) - 18;
-              
+              const left =
+                CENTER + slot.radius * Math.cos(rad) - AVATAR_SIZE / 2;
+
+              const top =
+                CENTER + slot.radius * Math.sin(rad) - AVATAR_SIZE / 2;
+
               const delay = (index * 0.4) % 4;
               const duration = 3.5 + (index * 0.2) % 2;
 
@@ -146,9 +152,8 @@ export const Globe: React.FC<GlobeProps> = ({
                 >
                   {/* Glowing Connection Aura */}
                   <span
-                    className={`absolute left-1/2 top-1/2 w-[46px] h-[46px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none ${
-                      isOnline ? 'bg-brand-emerald/30 border border-brand-emerald/40' : 'bg-brand-indigo/25 border border-brand-indigo/35'
-                    }`}
+                    className={`absolute left-1/2 top-1/2 w-[46px] h-[46px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none ${isOnline ? 'bg-brand-emerald/30 border border-brand-emerald/40' : 'bg-brand-indigo/25 border border-brand-indigo/35'
+                      }`}
                     style={{
                       animation: 'avatarPulse 3s ease-in-out infinite',
                       animationDelay: `${delay}s`,
@@ -156,14 +161,14 @@ export const Globe: React.FC<GlobeProps> = ({
                   />
 
                   {/* Avatar Image */}
+                  {/* Avatar Image */}
                   <img
                     src={p.avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${p.full_name}`}
                     alt={p.full_name}
-                    className={`w-9 h-9 rounded-full border-2 object-cover relative z-10 transition-all duration-300 group-hover:scale-110 group-hover:z-30 ${
-                      isOnline 
-                        ? 'border-brand-emerald shadow-[0_0_10px_rgba(16,185,129,0.5)] group-hover:border-white' 
+                    className={`w-12 h-12 rounded-full border-[3px] object-cover relative z-10 transition-all duration-300 group-hover:scale-125 group-hover:z-30 ${isOnline
+                        ? 'border-brand-emerald shadow-[0_0_14px_rgba(16,185,129,0.7)] group-hover:border-white'
                         : 'border-zinc-800 group-hover:border-brand-indigo'
-                    }`}
+                      }`}
                   />
                 </div>
               );
